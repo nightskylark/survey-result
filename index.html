@@ -2,95 +2,148 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Результат теста</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Карта типов</title>
   <style>
-    body { font-family: sans-serif; padding: 2em; }
-    input, button { font-size: 1rem; padding: 0.5em; }
-    #chart { max-width: 500px; margin-top: 2em; }
-    #sector { margin-top: 1em; font-weight: bold; font-size: 1.2em; }
+    body {
+      font-family: sans-serif;
+      padding: 2em;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    .layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2em;
+      align-items: flex-start;
+    }
+
+    .container {
+      position: relative;
+      width: 397px;
+      height: 561.5px;
+      flex-shrink: 0;
+    }
+
+    #chart-img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0; left: 0;
+    }
+
+    .dot {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: red;
+      border: 2px solid white;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      box-shadow: 0 0 4px black;
+    }
+
+    .result-block {
+      max-width: 600px;
+    }
+
+    .result-block h2 {
+      margin-top: 0;
+      color: darkblue;
+    }
+
+    .result-block p {
+      margin-bottom: 1em;
+      text-align: justify;
+    }
+
+    .input-block {
+      margin-bottom: 1em;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Результат теста</h1>
-  <input type="text" id="resultId" placeholder="Введите идентификатор результата" />
-  <button onclick="loadResult()">Показать</button>
+  <h1>Карта типов личности</h1>
 
-  <canvas id="chart" width="500" height="500"></canvas>
-  <div id="sector"></div>
-  <div id="description"></div>
+  <div class="input-block">
+    <label>Оптимизм: <input type="number" id="xInput" min="6" max="24" step="1" /></label>
+    <label>Активность: <input type="number" id="yInput" min="9" max="36" step="1" /></label>
+    <button onclick="plotDot()">Показать</button>
+  </div>
+
+  <div class="layout">
+    <div class="container">
+      <img id="chart-img" src="chart.png" alt="Карта" />
+      <div id="dot" class="dot" style="display: none;"></div>
+    </div>
+
+    <div class="result-block">
+      <h2 id="resultTitle">Результат не выбран</h2>
+
+      <p><strong>Содержательная интерпретация</strong><br>
+      Оптимизм в данной методике понимается как предрасположенность человека верить в свои силы и успех, иметь преимущественно положительные ожидания от жизни и других людей. «Оптимисты», как правило, экстравертированны, доброжелательны и открыты для общения. Для противоположной категории людей, пессимистов, свойственны сомнения в своих силах и доброжелательности других людей, ожидание неудачи, стремление избегать широких контактов, замкнутость на своем внутреннем мире (интровертированность).</p>
+
+      <p>Под активностью в данном контексте понимается энергичность, жизнерадостность, беспечность, безмятежность и склонность к риску. Пассивность проявляется в тревожности, боязливости, неуверенности в себе и нежелании что-либо делать.</p>
+
+      <p><strong>Каждому квадрату соответствует определенный тип личности:</strong></p>
+
+      <p><strong>Квадрат «Р» – «Реалисты»</strong> адекватно оценивают текущую ситуацию по своим силам (возможностям) и не пытаются прыгнуть «выше головы», довольствуются тем, что имеют. Как правило, они устойчивы к психологическому стрессу.</p>
+
+      <p><strong>Квадрат «АО» – «Активные оптимисты» или «Энтузиасты».</strong> Верят в свои силы и успех, позитивно настроены на будущее, предпринимают активные действия для того, чтобы добиться желаемых целей. Они бодры, жизнерадостны, не подвержены унынию или плохому настроению, легко и стремительно отражают удары судьбы, как бы тяжелы они ни были. В трудных ситуациях используют проблемно-ориентированные стратегии преодоления стресса.</p>
+
+      <p><strong>Квадрат «ПП» – «Пассивные пессимисты» или «Жертвы».</strong> Противоположная «Активным оптимистам» категория людей, которые ни во что не верят и ничего не предпринимают для того, чтобы изменить свою жизнь в лучшую сторону. Они характеризуются преобладанием мрачного и подавленного настроения, пассивностью, неверием в свои силы. В трудных ситуациях предпочитают стратегии ухода от решения проблем, считают себя жертвой обстоятельств.</p>
+
+      <p><strong>Квадрат «АП» – «Активные пессимисты» или «Негативисты».</strong> Для них свойственна большая активность, но эта активность часто имеет деструктивный характер. Такие люди, вместо того чтобы созидать новое, предпочитают разрушать старое. В трудных ситуациях часто используют агрессивные стратегии преодолевающего поведения.</p>
+
+      <p><strong>Квадрат «ПО» – «Пассивные оптимисты» или «Лентяи».</strong> Их девизом можно считать слова: «Всё как-нибудь само образуется…» Такие люди уверены в том, что «всё будет хорошо», хотя и не предпринимают для этого никаких усилий. Они добродушны, веселы и умеют даже в плохом находить что-то хорошее, однако их отличительной чертой является недостаток активности. Они больше надеются на случай, на удачу, чем на собственные силы. Склонны к пассивному ожиданию или откладыванию принятия решений.</p>
+    </div>
+  </div>
 
   <script>
-    const testId = 'k6j7qvfogh24k';
-    const token = 'c9b05eaf213d441a9fdc88baadeeb55c';
+    function plotDot() {
+      const optimism = parseFloat(document.getElementById("xInput").value);
+      const activity = parseFloat(document.getElementById("yInput").value);
+      if (isNaN(optimism) || isNaN(activity)) return alert("Введите оба значения");
 
-    async function loadResult() {
-      const resultId = document.getElementById('resultId').value.trim();
-      if (!resultId) return alert("Введите ID результата");
+      const scale = 0.5;
 
-      try {
-        const response = await fetch(`https://api.onlinetestpad.com/v1/tests/${testId}/results/${resultId}`, {
-          headers: { 'Access-Token': token }
-        });
-        if (!response.ok) throw new Error("Ошибка получения данных");
+      // Центр (15, 24) = (380, 500)
+      const fullX = 380 + (optimism - 15) * 40;
+      const fullY = 500 - (activity - 24) * 40;
 
-        const data = await response.json();
-        const x = data.x; // оптимизм
-        const y = data.y; // активность
-        const text = data.description;
+      const pxX = fullX * scale;
+      const pxY = fullY * scale;
 
-        drawChart(x, y);
-        document.getElementById("sector").innerText = "Сектор: " + determineSector(x, y);
-        document.getElementById("description").innerText = text;
+      const dot = document.getElementById("dot");
+      dot.style.left = pxX + "px";
+      dot.style.top = pxY + "px";
+      dot.style.display = "block";
 
-      } catch (err) {
-        alert("Ошибка: " + err.message);
-      }
+      const title = document.getElementById("resultTitle");
+      title.innerText = 'Тип личности: ' + getSector(optimism, activity);
     }
 
-    function determineSector(x, y) {
-      if (x >= 15 && x <= 19 && y >= 17 && y <= 24) return "Реалисты";
-      if (x >= 20 && x <= 24 && y >= 25 && y <= 36) return "Энтузиасты";
-      if (x >= 6 && x <= 14 && y >= 25 && y <= 36) return "Негативисты";
-      if (x >= 20 && x <= 24 && y >= 9 && y <= 16) return "Лентяи";
-      if (x >= 6 && x <= 14 && y >= 9 && y <= 16) return "Жертвы";
-      return "Пограничное значение";
+    function getSector(x, y) {
+        // Реалисты — строго в центре
+        if (x >= 15 && x <= 19 && y >= 17 && y <= 24) return "Реалист";
+
+        // Энтузиасты — справа сверху, исключая регион реалистов
+        if (x > 17 && x <= 24 && y > 20.5 && y <= 36) return "Энтузиаст";
+
+        // Негативисты — слева сверху, исключая регион реалистов
+        if (x >= 6 && x < 17 && y > 20.5 && y <= 36) return "Негативист";
+
+        // Лентяи — справа снизу, исключая регион реалистов
+        if (x > 17 && x <= 24 && y >= 9 && y < 20.5) return "Лентяй";
+
+        // Жертвы — слева снизу, исключая регион реалистов
+        if (x >= 6 && x < 17 && y >= 9 && y < 20.5) return "Жертва";
+
+        return "Пограничное значение";
     }
 
-    let chart;
-
-    function drawChart(x, y) {
-      const ctx = document.getElementById('chart').getContext('2d');
-      if (chart) chart.destroy();
-
-      chart = new Chart(ctx, {
-        type: 'scatter',
-        data: {
-          datasets: [{
-            label: 'Результат',
-            data: [{ x: x, y: y }],
-            pointBackgroundColor: 'red',
-            pointRadius: 8,
-          }]
-        },
-        options: {
-          responsive: false,
-          scales: {
-            x: {
-              title: { display: true, text: 'Оптимизм' },
-              min: 6, max: 24,
-              ticks: { stepSize: 1 }
-            },
-            y: {
-              title: { display: true, text: 'Активность' },
-              min: 9, max: 36,
-              ticks: { stepSize: 1 }
-            }
-          }
-        }
-      });
-    }
   </script>
 
 </body>
